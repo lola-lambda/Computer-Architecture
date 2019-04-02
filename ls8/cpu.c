@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <stdio.h>
 
 #define DATA_LEN 6
 
@@ -32,14 +33,62 @@ void cpu_load(struct cpu *cpu)
 void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
 {
   switch (op) {
-    case ALU_MUL:
+    case ALU_ADD:
       // TODO
       break;
 
+    case ALU_SUB:
+      break;
+    
+    case ALU_MUL:
+      break;
+    
+    case ALU_DIV:
+      break;
+    
+    case ALU_MOD:
+      break;
+
+    case ALU_INC:
+      break;
+
+    case ALU_DEC:
+      break;
+    
+    case ALU_CMP:
+      break;
+
+    case ALU_AND:
+      break;
+    
+    case ALU_NOT:
+      break;
+    
+    case ALU_OR:
+      break;
+    
+    case ALU_XOR:
+      break;
+    
+    case ALU_SHL:
+      break;
+
+    case ALU_SHR:
+      break;
+  
     // TODO: implement more ALU ops
   }
 }
 
+unsigned char cpu_ram_read(struct cpu *cpu, unsigned char index) 
+{
+  return cpu->ram[index];
+}
+
+void cpu_ram_write(struct cpu *cpu, unsigned char index, unsigned char val) 
+{
+  cpu->ram[index] = val;
+}
 /**
  * Run the CPU
  */
@@ -50,6 +99,7 @@ void cpu_run(struct cpu *cpu)
   while (running) {
     // TODO
     // 1. Get the value of the current instruction (in address PC).
+    int cur = cpu->PC;
     // 2. Figure out how many operands this next instruction requires
     // 3. Get the appropriate value(s) of the operands following this instruction
     // 4. switch() over it to decide on a course of action.
@@ -63,5 +113,8 @@ void cpu_run(struct cpu *cpu)
  */
 void cpu_init(struct cpu *cpu)
 {
+  cpu->PC = 0;
+  memset(cpu->ram, 0, sizeof(cpu->ram));
+  memset(cpu->reg, 0, sizeof(cpu->reg));
   // TODO: Initialize the PC and other special registers
 }
