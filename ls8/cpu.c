@@ -1,5 +1,7 @@
 #include "cpu.h"
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define DATA_LEN 6
 
@@ -17,7 +19,7 @@ void cpu_load(struct cpu *cpu)
     0b00000000,
     0b00000001  // HLT
   };
-
+  // read lines from a file, convert to numbers, store in ram
   int address = 0;
 
   for (int i = 0; i < DATA_LEN; i++) {
@@ -99,13 +101,42 @@ void cpu_run(struct cpu *cpu)
   while (running) {
     // TODO
     // 1. Get the value of the current instruction (in address PC).
-    int cur = cpu->PC;
+    unsigned int IR = cpu->ram[cpu->PC];
+
     // 2. Figure out how many operands this next instruction requires
+    int num_ops = IR >> 6;
+    int offset = num_ops + 1;
+
     // 3. Get the appropriate value(s) of the operands following this instruction
+    unsigned char operandA = cpu_ram_read(cpu, cpu->PC + 1);
+    unsigned char operandB = cpu_ram_read(cpu, cpu->PC + 2);
+
     // 4. switch() over it to decide on a course of action.
     // 5. Do whatever the instruction should do according to the spec.
+    switch (IR) {
+      case HLT:
+        running = 0;
+        exit(0);
+        break;
+      
+      case LDI:
+        cpu->reg[operandA] = operandB;
+        break;
+      
+      case PRN:
+        printf("%d", cpu->reg[operandA]);
+        break; 
+
+      default:
+        printf("instruction not recognized");
+        exit(1);
+        break;
+    }
+
     // 6. Move the PC to the next instruction.
+    cpu->PC += offset;
   }
+  
 }
 
 /**
