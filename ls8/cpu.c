@@ -5,28 +5,61 @@
 
 #define DATA_LEN 6
 
+unsigned char cpu_ram_read(struct cpu *cpu, int MAR) 
+{
+  return cpu->ram[MAR];
+}
+
+void cpu_ram_write(struct cpu *cpu, int MAR, unsigned char MDR) 
+{
+  cpu->ram[MAR] = MDR;
+}
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu)
+void cpu_load(struct cpu *cpu, char *path)
 {
-  char data[DATA_LEN] = {
-    // From print8.ls8
-    0b10000010, // LDI R0,8
-    0b00000000,
-    0b00001000,
-    0b01000111, // PRN R0
-    0b00000000,
-    0b00000001  // HLT
-  };
   // read lines from a file, convert to numbers, store in ram
-  int address = 0;
+  FILE *file;
+  char line[1024];
 
-  for (int i = 0; i < DATA_LEN; i++) {
-    cpu->ram[address++] = data[i];
+  file = fopen(path, "r");
+
+  if (file == NULL) {
+    printf("File failed to open");
+  }
+  
+  int MAR = 0;
+  while (fgets(line, 1024, file) != NULL) {
+
+    char *end;
+    unsigned char MDR = strtoul(line, &end, 2);
+    
+    if (line == end) {
+      continue;
+    }
+
+    cpu_ram_write(cpu, MAR++, MDR);
   }
 
-  // TODO: Replace this with something less hard-coded
+  fclose(file);
+
+  // char data[DATA_LEN] = {
+  //   // From print8.ls8
+  //   0b10000010, // LDI R0,8
+  //   0b00000000,
+  //   0b00001000,
+  //   0b01000111, // PRN R0
+  //   0b00000000,
+  //   0b00000001  // HLT
+  // };
+  
+  // int address = 0;
+
+  // for (int i = 0; i < DATA_LEN; i++) {
+  //   cpu->ram[address++] = data[i];
+  // }
+
 }
 
 /**
@@ -82,15 +115,6 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
   }
 }
 
-unsigned char cpu_ram_read(struct cpu *cpu, unsigned char index) 
-{
-  return cpu->ram[index];
-}
-
-void cpu_ram_write(struct cpu *cpu, unsigned char index, unsigned char val) 
-{
-  cpu->ram[index] = val;
-}
 /**
  * Run the CPU
  */
