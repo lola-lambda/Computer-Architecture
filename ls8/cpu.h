@@ -38,6 +38,10 @@ enum alu_op {
 #define LDI  0b10000010
 #define HLT  0b00000001
 #define PRN  0b01000111
+#define ADD  0b10100000
+#define SUB  0b10100001
+#define MUL  0b10100010
+#define DIV  0b10100011 
 // TODO: more instructions here. These can be used in cpu_run().
 
 // Function declarations
