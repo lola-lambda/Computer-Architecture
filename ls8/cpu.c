@@ -69,13 +69,14 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 {
   switch (op) {
     case ALU_ADD:
-      // TODO
+
       break;
 
     case ALU_SUB:
       break;
     
     case ALU_MUL:
+      cpu->reg[regA] *= cpu->reg[regB];
       break;
     
     case ALU_DIV:
@@ -150,6 +151,10 @@ void cpu_run(struct cpu *cpu)
       case PRN:
         printf("%d", cpu->reg[operandA]);
         break; 
+
+      case MUL:
+        alu(cpu, ALU_MUL, operandA, operandB);
+        break;
 
       default:
         printf("instruction not recognized");
