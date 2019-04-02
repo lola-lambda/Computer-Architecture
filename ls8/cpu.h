@@ -3,7 +3,7 @@
 
 // Holds all information about the CPU
 struct cpu {
-  int PC;
+  unsigned int PC;
   unsigned char reg[8];
   unsigned char ram[256];
 
