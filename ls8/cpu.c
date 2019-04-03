@@ -3,8 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define DATA_LEN 6
+// #define DATA_LEN 6
 
+// RAM Functions
 unsigned char cpu_ram_read(struct cpu *cpu, int MAR) 
 {
   return cpu->ram[MAR];
@@ -14,6 +15,21 @@ void cpu_ram_write(struct cpu *cpu, int MAR, unsigned char MDR)
 {
   cpu->ram[MAR] = MDR;
 }
+
+// Helper Functions
+// void push(struct cpu *cpu, unsigned char MDR) 
+// {
+//   cpu->reg[7]--;
+//   cpu_ram_write(cpu, cpu->reg[7], MDR);
+// }
+
+// void pop(struct cpu *cpu, int MAR) 
+// {
+//   unsigned char MDR = cpu_ram_read(cpu, cpu->reg[7]);
+//   cpu->reg[MAR] = MDR;
+//   cpu->reg[7]++;
+// }
+
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
@@ -69,7 +85,6 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 {
   switch (op) {
     case ALU_ADD:
-
       break;
 
     case ALU_SUB:
@@ -156,6 +171,16 @@ void cpu_run(struct cpu *cpu)
         alu(cpu, ALU_MUL, operandA, operandB);
         break;
 
+      case PUSH:
+        cpu->reg[7]--;
+        cpu_ram_write(cpu, cpu->reg[7], operandA);
+        break;
+
+      case POP:
+        cpu->reg[operandA] = cpu_ram_read(cpu, cpu->reg[7]);
+        cpu->reg[7]++;
+        break;
+
       default:
         printf("instruction not recognized");
         exit(1);
@@ -176,5 +201,6 @@ void cpu_init(struct cpu *cpu)
   cpu->PC = 0;
   memset(cpu->ram, 0, sizeof(cpu->ram));
   memset(cpu->reg, 0, sizeof(cpu->reg));
+  cpu->reg[7] = 0xF4;
   // TODO: Initialize the PC and other special registers
 }
