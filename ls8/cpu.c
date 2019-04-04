@@ -173,7 +173,7 @@ void cpu_run(struct cpu *cpu)
 
       case PUSH:
         cpu->reg[7]--;
-        cpu_ram_write(cpu, cpu->reg[7], operandA);
+        cpu_ram_write(cpu, cpu->reg[7], cpu->reg[operandA]);
         break;
 
       case POP:
