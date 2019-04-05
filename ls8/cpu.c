@@ -107,6 +107,13 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
       break;
     
     case ALU_CMP:
+      if (cpu->reg[regA] == cpu->reg[regB]) {
+        cpu->FL = 0b00000001;
+      } else if (cpu->reg[regA] > cpu->reg[regB]) {
+        cpu->FL = 0b00000010;
+      } else if (cpu->reg[regA] < cpu->reg[regB]) {
+        cpu->FL = 0b00000100;
+      }
       break;
 
     case ALU_AND:
@@ -182,18 +189,6 @@ void cpu_run(struct cpu *cpu)
         break;
 
       case CMP:
-      
-      // Compare the values in two registers.
-
-      // * If they are equal, set the Equal `E` flag to 1, 
-      // otherwise set it to 0.
-
-      // * If registerA is less than registerB, set the Less-than `L` flag to 1,
-      //   otherwise set it to 0.
-
-      // * If registerA is greater than registerB, set the Greater-than `G` flag
-      //   to 1, otherwise set it to 0.
-
         alu(cpu, ALU_CMP, operandA, operandB);
         break;
 
@@ -244,8 +239,8 @@ void cpu_run(struct cpu *cpu)
 void cpu_init(struct cpu *cpu)
 {
   cpu->PC = 0;
+  cpu->FL = 0;
+  cpu->reg[7] = 0xF4;
   memset(cpu->ram, 0, sizeof(cpu->ram));
   memset(cpu->reg, 0, sizeof(cpu->reg));
-  cpu->reg[7] = 0xF4;
-  // TODO: Initialize the PC and other special registers
 }
