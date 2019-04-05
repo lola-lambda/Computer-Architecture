@@ -17,18 +17,17 @@ void cpu_ram_write(struct cpu *cpu, int MAR, unsigned char MDR)
 }
 
 // Helper Functions
-// void push(struct cpu *cpu, unsigned char MDR) 
-// {
-//   cpu->reg[7]--;
-//   cpu_ram_write(cpu, cpu->reg[7], MDR);
-// }
+void push(struct cpu *cpu, unsigned char MDR) 
+{
+  cpu->reg[7]--;
+  cpu_ram_write(cpu, cpu->reg[7], cpu->reg[MDR]);
+}
 
-// void pop(struct cpu *cpu, int MAR) 
-// {
-//   unsigned char MDR = cpu_ram_read(cpu, cpu->reg[7]);
-//   cpu->reg[MAR] = MDR;
-//   cpu->reg[7]++;
-// }
+void pop(struct cpu *cpu, int MAR) 
+{
+  cpu->reg[MAR] = cpu_ram_read(cpu, cpu->reg[7]);
+  cpu->reg[7]++;
+}
 
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
@@ -85,9 +84,11 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 {
   switch (op) {
     case ALU_ADD:
+      cpu->reg[regA] += cpu->reg[regB];
       break;
 
     case ALU_SUB:
+      cpu->reg[regA] -= cpu->reg[regB];
       break;
     
     case ALU_MUL:
@@ -95,15 +96,19 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
       break;
     
     case ALU_DIV:
+      cpu->reg[regA] /= cpu->reg[regB];
       break;
     
     case ALU_MOD:
+      cpu->reg[regA] %= cpu->reg[regB];
       break;
 
     case ALU_INC:
+      cpu->reg[regA]++;
       break;
 
     case ALU_DEC:
+      cpu->reg[regA]--;
       break;
     
     case ALU_CMP:
@@ -179,13 +184,11 @@ void cpu_run(struct cpu *cpu)
         break;
 
       case PUSH:
-        cpu->reg[7]--;
-        cpu_ram_write(cpu, cpu->reg[7], cpu->reg[operandA]);
+        push(cpu, operandA);
         break;
 
       case POP:
-        cpu->reg[operandA] = cpu_ram_read(cpu, cpu->reg[7]);
-        cpu->reg[7]++;
+        pop(cpu, operandA);
         break;
 
       case CMP:
@@ -218,17 +221,36 @@ void cpu_run(struct cpu *cpu)
       // jump to the address stored in the given register.
         continue;
       
-      // case CALL:
-        // push();
-        // break;
+      case JGT:
+        if (cpu->FL & 0b00000010) {
+          cpu->PC = cpu->reg[operandA];
+        } else {
+          cpu->PC += offset;
+        }
+        continue;
+
+      case JLT:
+        if (cpu->FL & 0b00000100) {
+          cpu->PC = cpu->reg[operandA];
+        } else {
+          cpu->PC += offset;
+        }
+        continue;
+
+      case CALL:
+        push(cpu, (cpu->PC + offset));
+        cpu->PC = cpu->reg[operandA];
+        break;
         // 1. The address of the ***instruction*** _directly after_ `CALL` is
         // pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
         // 2. The PC is set to the address stored in the given register. 
         // We jump to that location in RAM and execute the first instruction in the subroutine. 
         // The PC can move forward or backwards from its current location.
 
-      // case RET:
-        // break;
+      case RET:
+        pop(cpu, operandA);
+        cpu->PC = cpu->reg[operandA];
+        break;
         // Return from subroutine.
         // Pop the value from the top of the stack and store it in the `PC`.
       

@@ -7,7 +7,7 @@ struct cpu {
   unsigned char FL;
   unsigned char reg[8];
   unsigned char ram[256];
-  
+
   // program counter
   // flag
   // registers (array)
@@ -53,7 +53,8 @@ enum alu_op {
 #define JMP  0b01010100
 #define JEQ  0b01010101
 #define JNE  0b01010110
-
+#define JGT  0b01010111
+#define JLT  0b01011000
 // TODO: more instructions here. These can be used in cpu_run().
 
 // Function declarations
