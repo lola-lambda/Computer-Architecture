@@ -171,7 +171,7 @@ void cpu_run(struct cpu *cpu)
         break;
       
       case PRN:
-        printf("%d", cpu->reg[operandA]);
+        printf("%d\n", cpu->reg[operandA]);
         break; 
 
       case MUL:
@@ -196,23 +196,27 @@ void cpu_run(struct cpu *cpu)
         cpu->PC = cpu->reg[operandA];
       // Jump to the address stored in the given register.
       // Set the `PC` to the address stored in the given register.
-        break;
+        continue;
       
       case JEQ:
-        if (cpu->FL == 0b00000001) {
+        if (cpu->FL & 0b00000001) {
           cpu->PC = cpu->reg[operandA];
+        } else {
+          cpu->PC += offset;
         }
       // If `equal` flag is set (true), 
       // jump to the address stored in the given register.
-        break;
+        continue;
 
       case JNE:
-        if ((cpu->FL & 0b00000001) == 0) {
+        if (!(cpu->FL & 0b00000001)) {
           cpu->PC = cpu->reg[operandA];
+        } else {
+          cpu->PC += offset;
         }
       // If `E` flag is clear (false, 0), 
       // jump to the address stored in the given register.
-        break;
+        continue;
       
       // case CALL:
         // push();
