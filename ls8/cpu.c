@@ -181,6 +181,51 @@ void cpu_run(struct cpu *cpu)
         cpu->reg[7]++;
         break;
 
+      case CMP:
+      
+      // Compare the values in two registers.
+
+      // * If they are equal, set the Equal `E` flag to 1, 
+      // otherwise set it to 0.
+
+      // * If registerA is less than registerB, set the Less-than `L` flag to 1,
+      //   otherwise set it to 0.
+
+      // * If registerA is greater than registerB, set the Greater-than `G` flag
+      //   to 1, otherwise set it to 0.
+
+        alu(cpu, ALU_CMP, operandA, operandB);
+        break;
+
+      case JMP:
+      // Jump to the address stored in the given register.
+      // Set the `PC` to the address stored in the given register.
+        break;
+      
+      case JEQ:
+      // If `equal` flag is set (true), 
+      // jump to the address stored in the given register.
+        break;
+
+      case JNE:
+      // If `E` flag is clear (false, 0), 
+      // jump to the address stored in the given register.
+        break;
+      
+      // case CALL:
+        // push();
+        // break;
+        // 1. The address of the ***instruction*** _directly after_ `CALL` is
+        // pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
+        // 2. The PC is set to the address stored in the given register. 
+        // We jump to that location in RAM and execute the first instruction in the subroutine. 
+        // The PC can move forward or backwards from its current location.
+
+      // case RET:
+        // break;
+        // Return from subroutine.
+        // Pop the value from the top of the stack and store it in the `PC`.
+      
       default:
         printf("instruction not recognized");
         exit(1);
