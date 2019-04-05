@@ -122,21 +122,27 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
       break;
 
     case ALU_AND:
+      cpu->reg[regA] &= cpu->reg[regB];
       break;
     
     case ALU_NOT:
+      cpu->reg[regA] = !cpu->reg[regA];
       break;
     
     case ALU_OR:
+      cpu->reg[regA] |= cpu->reg[regB];
       break;
     
     case ALU_XOR:
+      cpu->reg[regA] ^= cpu->reg[regB];
       break;
     
     case ALU_SHL:
+      cpu->reg[regA] = cpu->reg[regA] << cpu->reg[regB];
       break;
 
     case ALU_SHR:
+      cpu->reg[regA] = cpu->reg[regA] >> cpu->reg[regB];
       break;
   
     // TODO: implement more ALU ops
