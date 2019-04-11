@@ -4,10 +4,12 @@
 // Holds all information about the CPU
 struct cpu {
   unsigned int PC;
+  unsigned char FL;
   unsigned char reg[8];
   unsigned char ram[256];
 
-  // PC
+  // program counter
+  // flag
   // registers (array)
   // ram (array)
 };
@@ -45,7 +47,14 @@ enum alu_op {
 #define MOD  0b10100100
 #define PUSH 0b01000101
 #define POP  0b01000110
-
+#define CALL 0b01010000
+#define RET  0b00010001
+#define CMP  0b10100111
+#define JMP  0b01010100
+#define JEQ  0b01010101
+#define JNE  0b01010110
+#define JGT  0b01010111
+#define JLT  0b01011000
 // TODO: more instructions here. These can be used in cpu_run().
 
 // Function declarations
